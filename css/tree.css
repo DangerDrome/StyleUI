@@ -15,28 +15,34 @@
 }
 
 /* --- Guide Lines --- */
+/* Vertical connector */
 .tree-item::before {
-    content: '';
-    position: absolute;
-    top: 22px; 
-    left: 8px; /* Start of the horizontal line */
-    width: 15px; /* Connect from edge to the content area */
-    height: 1px;
-    background: var(--overlay-medium);
-}
-
-.tree-item::after {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 8px; /* Vertical line alignment */
+    left: 8px; /* Align with horizontal line */
     width: 1px;
     background: var(--overlay-medium);
+    z-index: 0; /* Place behind horizontal line to avoid darker overlap */
 }
 
-.tree-item:last-child::after {
-    height: 22px; /* Stop line at the item */
+/* Stop the vertical line at half height for the last child */
+.tree-item:last-child::before {
+    bottom: 50%;
+}
+
+/* Horizontal connector */
+.tree-item::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 8px;
+    width: 15px; /* Connect from edge to the content area */
+    height: 1px;
+    background: var(--overlay-medium);
+    z-index: 1; /* Draw above the vertical line */
 }
 
 /* --- Content & Toggle --- */
@@ -64,9 +70,21 @@
     justify-content: center;
     width: 16px;
     height: 16px;
-    transition: transform var(--transition-fast);
+    transition: transform var(--transition-fast), background var(--transition-fast);
     flex-shrink: 0;
     margin-left: -2px; /* Align toggle with lines */
+    background: transparent; /* Default transparent */
+    border-radius: var(--radius-sm);
+    position: relative; /* Create stacking context */
+    z-index: 1; /* Above edges */
+}
+
+.has-children > .tree-item-content > .tree-item-toggle {
+    background: var(--bg-layer-0); /* Show bg only if has children */
+}
+
+.tree-item-toggle:hover {
+    background: var(--overlay-light);
 }
 
 .tree-item.collapsed > .tree-item-content > .tree-item-toggle {
@@ -79,16 +97,6 @@
 }
 
 /* --- Snake Path & Selection Styling --- */
-.tree-item.ancestor > .tree-item-content::before,
-.tree-item.ancestor > .tree-item-content::after,
-.tree-item.selected > .tree-item-content::before {
-    background: var(--accent);
-}
-
-.tree-item.path-sibling-connector::after {
-    background: var(--accent);
-}
-
 /* Selection is now handled by .btn-ghost.selected */
 
 /* --- Children --- */
@@ -102,4 +110,20 @@
 
 .tree-item.collapsed > .tree-children {
     max-height: 0;
+} 
+
+/* --- Edge Overlay Elements (Draw accent path from top to selection) --- */
+.tree-edge-vertical,
+.tree-edge-horizontal {
+    position: absolute;
+    background: var(--accent);
+    pointer-events: none;
+    z-index: 2;
+} 
+
+.tree-edge-dynamic {
+    position: absolute;
+    background: var(--accent);
+    pointer-events: none;
+    z-index: 0; /* Behind toggle */
 } 
