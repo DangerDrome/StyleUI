@@ -26,27 +26,35 @@
         h5.className = 'col-12';
         content.appendChild(h5);
 
-        // --- Data for Trees ---
-        const treeData1 = [
-            { label: 'Documents', icon: 'folder', children: [
-                { label: 'Work', icon: 'folder', children: [
-                    { label: 'project-alpha.docx', icon: 'file-text' },
-                    { label: 'project-beta.docx', icon: 'file-text' },
-                ]},
-                { label: 'Personal', icon: 'folder', children: [ { label: 'TODO.md', icon: 'list-checks' } ] }
-            ]},
-            { label: 'report.pdf', icon: 'file-text' }
+        // --- Refreshed Data Sets for Trees ---
+        const fileExplorerData = [
+            {
+                label: 'Workspace', icon: 'folder', children: [
+                    {
+                        label: 'src', icon: 'folder', children: [
+                            { label: 'index.js', icon: 'file-code' },
+                            { label: 'helpers.js', icon: 'file-code' }
+                        ]
+                    },
+                    {
+                        label: 'assets', icon: 'folder', children: [
+                            { label: 'logo.svg', icon: 'file-image' },
+                            { label: 'bg.jpg', icon: 'file-image' }
+                        ]
+                    },
+                    { label: 'package.json', icon: 'file-json' }
+                ]
+            }
         ];
-        
-        const treeData2 = [
-            { label: 'Assets', icon: 'archive', startExpanded: true, children: [
-                { label: 'Images', icon: 'image', startExpanded: true, children: [
-                    { label: 'background.png', icon: 'file-image' },
-                    { label: 'logo.svg', icon: 'file-image' },
-                ]},
-                { label: 'Stylesheets', icon: 'file-type-2', children: [ { label: 'main.css' } ] }
-            ]},
-            { label: 'index.html', icon: 'file-code' }
+
+        const navigationData = [
+            {
+                label: 'Sections', icon: 'list', children: [
+                    { label: 'Introduction', href: '#intro', icon: 'book' },
+                    { label: 'Getting Started', href: '#getting-started', icon: 'rocket' },
+                    { label: 'API Reference', href: '#api', icon: 'code' }
+                ]
+            }
         ];
 
         // --- Settings Tree Data and Helpers ---
@@ -139,16 +147,19 @@
         const createTreeExample = (title, data, isSettings = false) => {
             const col = document.createElement('div');
             col.className = isSettings ? 'col-6' : 'col-3';
-            const h6 = document.createElement('h6');
-            h6.className = 'text-secondary';
-            h6.textContent = title;
-            col.appendChild(h6);
-            col.appendChild(UI.tree(data));
+
+            const card = UI.card({
+                title,
+                content: UI.tree(data),
+                icon: 'tree-pine'
+            });
+
+            col.appendChild(card);
             return col;
         };
 
-        content.appendChild(createTreeExample('Standard Tree', treeData1));
-        content.appendChild(createTreeExample('Pre-expanded Tree', treeData2));
+        content.appendChild(createTreeExample('File Explorer', fileExplorerData));
+        content.appendChild(createTreeExample('Navigation', navigationData));
         content.appendChild(createTreeExample('Settings Panel', settingsTreeData, true));
 
         const panel = UI.panel('', content, { 
