@@ -136,8 +136,21 @@
     z-index: 0; /* Behind toggle */
 } 
 
+.tree-edge-base {
+    position: absolute;
+    background: var(--overlay-medium);
+    pointer-events: none;
+    z-index: -1;
+}
+
 /* Ensure connectors lie below dynamic edges */
 .tree-item::before,
 .tree-item::after {
     z-index: -1;
+} 
+
+/* Legacy pseudo-element connectors are no longer needed, hide them */
+.tree-item::before,
+.tree-item::after {
+    background: transparent !important;
 } 

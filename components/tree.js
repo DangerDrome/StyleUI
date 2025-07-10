@@ -14,14 +14,30 @@
         const container = document.createElement('ul');
         container.className = 'tree';
 
-        // ----- Path Edge Layer -----
+        // ----- Base (grey) Edge Layer -----
+        const baseEdgeLayer = document.createElement('div');
+        baseEdgeLayer.className = 'tree-edge-base-layer';
+        Object.assign(baseEdgeLayer.style, {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            pointerEvents: 'none'
+        });
+        container.appendChild(baseEdgeLayer);
+
+        // ----- Accent Edge Layer -----
         const edgeLayer = document.createElement('div');
         edgeLayer.className = 'tree-edge-layer';
-        edgeLayer.style.position = 'absolute';
-        edgeLayer.style.top = '0';
-        edgeLayer.style.left = '0';
-        edgeLayer.style.right = '0';
-        edgeLayer.style.bottom = '0';
+        Object.assign(edgeLayer.style, {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            pointerEvents: 'none'
+        });
         container.appendChild(edgeLayer);
 
         let selectedContent = null;
@@ -30,19 +46,92 @@
         const CONNECTOR_OFFSET = 8; // left offset used in CSS
         const EDGE_GAP = 6; // gap between edge and item content (px)
 
-        function clearEdges() {
+        function clearAccentEdges() {
             edgeLayer.innerHTML = '';
         }
 
-        function addEdge(style) {
+        function clearBaseEdges() {
+            baseEdgeLayer.innerHTML = '';
+        }
+
+        function addAccentEdge(style) {
             const edge = document.createElement('div');
             edge.className = 'tree-edge-dynamic';
             Object.assign(edge.style, style);
             edgeLayer.appendChild(edge);
         }
 
+        function addBaseEdge(style) {
+            const edge = document.createElement('div');
+            edge.className = 'tree-edge-base';
+            Object.assign(edge.style, style);
+            baseEdgeLayer.appendChild(edge);
+        }
+
+        const BASE_EDGE_THICKNESS = 1;
+
+        function drawBaseEdges() {
+            clearBaseEdges();
+
+            const containerRect = container.getBoundingClientRect();
+
+            const prevCenterByPath = new Map();
+
+            const items = Array.from(container.querySelectorAll('.tree-item'));
+            items.forEach(li => {
+                // Skip items inside collapsed branches
+                if (li.closest('.tree-item.collapsed')) return;
+
+                const contentEl = li.querySelector('.tree-item-content');
+                if (!contentEl) return;
+
+                const contentRect = contentEl.getBoundingClientRect();
+                const liRect = li.getBoundingClientRect();
+
+                const centerY = contentRect.top - containerRect.top + contentRect.height / 2;
+                const pathLeft = liRect.left - containerRect.left + CONNECTOR_OFFSET;
+
+                // Horizontal line from vertical spine to content (gap retained)
+                let horizontalWidth = contentRect.left - containerRect.left - pathLeft - EDGE_GAP;
+                if (horizontalWidth < 0) horizontalWidth = 0;
+                addBaseEdge({
+                    position: 'absolute',
+                    left: `${pathLeft}px`,
+                    top: `${centerY - BASE_EDGE_THICKNESS / 2}px`,
+                    width: `${horizontalWidth}px`,
+                    height: `${BASE_EDGE_THICKNESS}px`,
+                });
+
+                // Vertical spine segments
+                if (!prevCenterByPath.has(pathLeft)) {
+                    // First node on this path: draw from top to centerY
+                    addBaseEdge({
+                        position: 'absolute',
+                        left: `${pathLeft}px`,
+                        top: '0',
+                        width: `${BASE_EDGE_THICKNESS}px`,
+                        height: `${centerY}px`,
+                    });
+                } else {
+                    const prevY = prevCenterByPath.get(pathLeft);
+                    const top = Math.min(prevY, centerY);
+                    const height = Math.abs(prevY - centerY);
+                    addBaseEdge({
+                        position: 'absolute',
+                        left: `${pathLeft}px`,
+                        top: `${top}px`,
+                        width: `${BASE_EDGE_THICKNESS}px`,
+                        height: `${height}px`,
+                    });
+                }
+
+                prevCenterByPath.set(pathLeft, centerY);
+            });
+        }
+
         function positionEdges(targetContent) {
-            clearEdges();
+            clearAccentEdges();
+            drawBaseEdges();
             if (!targetContent) return;
 
             const containerRect = container.getBoundingClientRect();
@@ -68,7 +157,7 @@
                 // Draw vertical segment from previous node to this node (skip for root which starts at 0)
                 if (index === 0) {
                     // Root vertical from top to center
-                    addEdge({
+                    addAccentEdge({
                         position: 'absolute',
                         left: `${pathLeft}px`,
                         top: '0',
@@ -79,7 +168,7 @@
                 } else {
                     const top = Math.min(prevCenterY, centerY);
                     const height = Math.abs(centerY - prevCenterY);
-                    addEdge({
+                    addAccentEdge({
                         position: 'absolute',
                         left: `${pathLeft}px`,
                         top: `${top}px`,
@@ -92,7 +181,7 @@
                 // Horizontal segment from vertical line to content label
                 let horizontalWidth = contentRect.left - containerRect.left - pathLeft - EDGE_GAP;
                 if (horizontalWidth < 0) horizontalWidth = 0;
-                addEdge({
+                addAccentEdge({
                     position: 'absolute',
                     left: `${pathLeft}px`,
                     top: `${centerY - EDGE_THICKNESS / 2}px`,
