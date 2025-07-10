@@ -23,7 +23,7 @@
                     'buttons': 'mouse-pointer-click', 'cards': 'square', 'forms': 'text-cursor-input',
                     'icons': 'award', 'menus': 'list', 'modals': 'layout', 'progress': 'loader-2',
                     'spinners': 'loader', 'tags': 'tag', 'toasts': 'bell', 'tooltips': 'message-square',
-                    'trees': 'tree-pine', 'patterns': 'grip', 'markdown': 'file-text'
+                    'trees': 'tree-pine', 'widgets': 'film', 'patterns': 'grip', 'markdown': 'file-text'
                 };
                 return iconMap[sectionName] || 'box';
             };
@@ -80,7 +80,7 @@
         const sections = [
             { name: 'Foundations', children: ['variables', 'colors', 'typography'] },
             { name: 'Layout', children: ['grid', 'panels', 'scrollbars'] },
-            { name: 'Components', children: ['buttons', 'cards', 'forms', 'icons', 'menus', 'modals', 'progress', 'spinners', 'tags', 'toasts', 'tooltips', 'trees', 'markdown'] },
+            { name: 'Components', children: ['buttons', 'cards', 'forms', 'icons', 'menus', 'modals', 'progress', 'spinners', 'tags', 'toasts', 'tooltips', 'trees', 'widgets', 'markdown'] },
             { name: 'Patterns', children: ['patterns'] }
         ];
 

@@ -5,7 +5,7 @@
         const sectionData = [
             { name: 'Foundations', children: ['variables', 'colors', 'typography'] },
             { name: 'Layout', children: ['grid', 'panels', 'scrollbars'] },
-            { name: 'Components', children: ['buttons', 'cards', 'forms', 'icons', 'menus', 'modals', 'progress', 'spinners', 'tags', 'toasts', 'tooltips', 'trees', 'markdown'] },
+            { name: 'Components', children: ['buttons', 'cards', 'forms', 'icons', 'menus', 'modals', 'progress', 'spinners', 'tags', 'toasts', 'tooltips', 'trees', 'widgets', 'markdown'] },
             { name: 'Patterns', children: ['patterns'] }
         ];
 

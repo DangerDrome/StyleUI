@@ -1,0 +1,21 @@
+.video-player {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+}
+
+.video-player video {
+    width: 100%;
+    border-radius: var(--radius-sm);
+}
+
+.video-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.video-time-label {
+    color: var(--text-tertiary);
+} 
