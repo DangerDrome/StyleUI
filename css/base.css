@@ -111,6 +111,8 @@ textarea:focus-visible,
     z-index: 10;
     display: flex;
     flex-direction: column;
+    /* Dim accent color locally for tree edges */
+    --accent: rgba(var(--accent-rgb), 0.4);
 }
 
 .left-panel .panel-header {
@@ -162,8 +164,8 @@ textarea:focus-visible,
     flex-grow: 1;
     padding: calc(var(--header-height) + var(--space-8)) var(--space-8) calc(var(--footer-height) + var(--space-8));
     max-width: 1400px;
-    margin-left: calc(280px + var(--space-4));
-    margin-right: var(--space-4);
+    margin-left: calc(15vw + var(--space-8));
+    margin-right: var(--space-8);
     transition: margin-left var(--transition-base), margin-right var(--transition-base);
 }
 
@@ -188,7 +190,7 @@ textarea:focus-visible,
 }
 
 .style-guide-layout.collapsed .main-container {
-    margin-left: var(--space-4);
+    margin-left: var(--space-8);
 }
 
 .style-guide-layout.collapsed + .footer-panel {

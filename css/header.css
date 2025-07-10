@@ -18,7 +18,7 @@
     border-radius: 0;
     border-bottom: none;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr auto; /* title | nav | actions (right) */
     align-items: center;
 }
 
@@ -29,9 +29,10 @@
 
 #header-nav-container {
     grid-column: 2;
-    display: flex;
+    display: none;
     gap: var(--space-2);
     align-items: center;
+    justify-self: end; /* push nav buttons to the right */
 }
 
 .header-panel .panel-actions {

@@ -1,8 +1,9 @@
 .footer-panel {
     position: fixed;
     bottom: var(--space-4);
-    left: calc(140px + 50vw);
-    transform: translateX(-50%) translateY(calc(100% + var(--space-4)));
+    right: var(--space-4);
+    left: auto;
+    transform: translateY(calc(100% + var(--space-4)));
     z-index: 15;
     height: var(--footer-height);
     background-color: var(--bg-layer-2);
@@ -20,7 +21,7 @@
 
 .footer-panel.visible {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
     pointer-events: all;
 }
 
