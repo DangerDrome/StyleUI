@@ -65,6 +65,16 @@ h2 {
     font-feature-settings: "kern" 1;
     text-rendering: optimizeLegibility;
     width: fit-content;
+    margin-top: var(--space-20); /* extra gap between sections */
+}
+
+/* Larger spacing before each group header and section */
+.group-header {
+    margin-top: var(--space-24);
+}
+
+section[id^="section-"] > h2:first-child {
+    margin-top: var(--space-20);
 }
 
 h3 { 
