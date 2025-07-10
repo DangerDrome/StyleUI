@@ -47,7 +47,17 @@
         // Draggable handle / playhead
         const handle = document.createElement('div');
         handle.className = 'timeline-handle';
+        // Insert chevron-down icon using Lucide
+        handle.innerHTML = '<i data-lucide="chevron-down" class="lucide"></i>';
+        // Set width to represent exactly one frame
+        const framePct = 100 / duration;
+        handle.style.width = framePct + '%';
         track.appendChild(handle);
+
+        // Render the icon if Lucide is available
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons({ nodes: [handle] });
+        }
 
         /* ---------------- Playback Range ---------------- */
         let rangeStart = clamp(startRange, 0, duration);
