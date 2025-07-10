@@ -54,6 +54,7 @@ h1 {
     font-feature-settings: "kern" 1;
     text-rendering: optimizeLegibility;
     margin-top: var(--space-2);
+    margin-bottom: -80px;
 }
 
 h2 { 
