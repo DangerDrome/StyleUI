@@ -68,11 +68,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
+    padding: var(--space-1);
     transition: transform var(--transition-fast), background var(--transition-fast);
     flex-shrink: 0;
-    margin-left: -2px; /* Align toggle with lines */
+    margin-left: -4px; /* Adjust for increased size to align with lines */
     background: transparent; /* Default transparent */
     border-radius: var(--radius-sm);
     position: relative; /* Create stacking context */
@@ -83,8 +84,15 @@
     background: var(--bg-layer-0); /* Show bg only if has children */
 }
 
+/* Keep toggle transparent when row is selected or hovered */
+.tree-item.selected > .tree-item-content > .tree-item-toggle,
+.tree-item > .tree-item-content.selected > .tree-item-toggle,
+.tree-item > .tree-item-content:hover > .tree-item-toggle {
+    background: transparent;
+}
+
 .tree-item-toggle:hover {
-    background: var(--overlay-light);
+    background: transparent;
 }
 
 .tree-item.collapsed > .tree-item-content > .tree-item-toggle {
@@ -126,4 +134,10 @@
     background: var(--accent);
     pointer-events: none;
     z-index: 0; /* Behind toggle */
+} 
+
+/* Ensure connectors lie below dynamic edges */
+.tree-item::before,
+.tree-item::after {
+    z-index: -1;
 } 
