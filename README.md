@@ -1,11 +1,11 @@
-# FileUI Style Guide
+# StyleUI Style Guide
 
-This directory contains **all client-side assets** that power the FileUI design-system demo (style-guide).
+This directory contains **all client-side assets** that power the StyleUI design-system demo (style-guide).
 
 ## High-level layout
 
 ```
-style/
+StyleUI/
 ├── css/         — Atomic & component stylesheets (no duplicates)
 ├── components/  — Vanilla-JS UI building blocks (IIFE, attach to `UI.*`)
 ├── sections/    — Content generators that populate the demo page

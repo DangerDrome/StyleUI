@@ -85,7 +85,7 @@
             label: 'GitHub',
             variant: 'ghost',
             onclick: () => {
-                window.open('https://github.com/Danger-Noodle/FileUI', '_blank');
+                window.open('https://github.com/Danger-Noodle/StyleUI', '_blank');
             }
         });
         actionsDiv.appendChild(githubButton);

@@ -31,7 +31,7 @@
         icons() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons({ class: 'lucide' });
-                const savedStrokeWidth = localStorage.getItem('fileui-stroke-width');
+                const savedStrokeWidth = localStorage.getItem('styleui-stroke-width');
                 if (savedStrokeWidth) {
                     document.querySelectorAll('.lucide').forEach(icon => {
                         icon.style.strokeWidth = savedStrokeWidth;
@@ -54,7 +54,7 @@
         theme: {
             set(theme) {
                 document.body.classList.toggle('dark', theme === 'dark');
-                localStorage.setItem('fileui-theme', theme);
+                localStorage.setItem('styleui-theme', theme);
             },
             get() {
                 return document.body.classList.contains('dark') ? 'dark' : 'light';
@@ -70,7 +70,7 @@
             translations: {}, // Will be populated by a separate language file loader if needed
             set(lang) {
                 document.documentElement.setAttribute('lang', lang);
-                localStorage.setItem('fileui-lang', lang);
+                localStorage.setItem('styleui-lang', lang);
             },
             get() {
                 return document.documentElement.getAttribute('lang') || 'en';
@@ -121,7 +121,7 @@
 
     // Auto-initialize theme from localStorage
     document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('fileui-theme');
+        const savedTheme = localStorage.getItem('styleui-theme');
         if (savedTheme) {
             UI.theme.set(savedTheme);
         } else {
