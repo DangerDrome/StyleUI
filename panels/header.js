@@ -37,7 +37,7 @@
         const sections = [
             'variables', 'colors', 'typography', 'grid', 'panels', 'scrollbars',
             'buttons', 'cards', 'forms', 'icons', 'menus', 'modals', 'progress',
-            'spinners', 'tags', 'toasts', 'tooltips', 'trees', 'patterns'
+            'spinners', 'tags', 'toasts', 'tooltips', 'trees', 'patterns', 'markdown'
         ];
         
         const iconMap = {
@@ -46,7 +46,7 @@
             'buttons': 'mouse-pointer-click', 'cards': 'square', 'forms': 'text-cursor-input',
             'icons': 'award', 'menus': 'list', 'modals': 'layout', 'progress': 'loader-2',
             'spinners': 'loader', 'tags': 'tag', 'toasts': 'bell', 'tooltips': 'message-square',
-            'trees': 'tree-pine', 'patterns': 'grip'
+            'trees': 'tree-pine', 'patterns': 'grip', 'markdown': 'file-text'
         };
 
         sections.forEach(sectionName => {

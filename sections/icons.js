@@ -26,7 +26,7 @@
             'Media Icons': ['play', 'pause', 'stop-circle', 'skip-back', 'skip-forward', 'volume-2', 'volume-x', 'image', 'video', 'music', 'mic', 'camera'],
             'VFX Type Icons': [
                 { name: '3D Models', icon: 'box' }, { name: 'Compositing', icon: 'layers' },
-                { name: 'Textures', icon: 'texture' }, { name: 'Sequences', icon: 'clapperboard' },
+                { name: 'Textures', icon: 'image' }, { name: 'Sequences', icon: 'clapperboard' },
                 { name: 'Projects', icon: 'folder-kanban' }, { name: 'Renders', icon: 'monitor' },
                 { name: 'Simulations', icon: 'sparkles' }, { name: 'Materials', icon: 'palette' },
                 { name: 'Animation', icon: 'film' }, { name: 'Assets', icon: 'archive' },
