@@ -1,44 +1,49 @@
 (function() {
     if (!window.UI) window.UI = {};
 
-    const defaultRenderer = new marked.Renderer();
-    const videoRenderer = new marked.Renderer();
-    // Clone all default methods
-    Object.keys(defaultRenderer).forEach(key => {
-        if (typeof defaultRenderer[key] === 'function') {
-            videoRenderer[key] = defaultRenderer[key].bind(defaultRenderer);
-        }
+    const md = window.markdownit({
+        html: true,
+        linkify: true,
+        breaks: true
     });
 
-    const isYouTube = (url) => {
-        const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
-        return match ? match[1] : null;
+    // --- Custom image rule to handle video embedding ---
+    const defaultImageRender = md.renderer.rules.image || function (tokens, idx, options, env, self) {
+        return self.renderToken(tokens, idx, options);
     };
 
-    videoRenderer.image = (href, title, text) => {
-        // Normalize href in case it's an object
-        let url = href;
-        if (typeof href === 'object' && href !== null) {
-            url = href.href || String(href);
-        }
+    const isYouTube = (url) => {
+        const m = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+        return m ? m[1] : null;
+    };
 
-        const alt = typeof text === 'string' ? text.trim().toLowerCase() : '';
+    md.renderer.rules.image = function (tokens, idx, options, env, self) {
+        const token = tokens[idx];
+        const alt = (token.content || '').trim().toLowerCase();
+        let url = token.attrGet('src');
+
+        // Resolve '@/media' shorthand
+        if (url && url.startsWith('@/media/')) {
+            url = url.slice(2); // 'media/...'
+        }
 
         if (alt === 'video') {
             const ytId = isYouTube(url);
             if (ytId) {
-                return `<div class="markdown-video"><iframe src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe></div>`;
+                return `<div class="markdown-video"><iframe width="560" height="315" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
             }
-            return `<video class="markdown-video" controls src="${url}"${title ? ` title="${title}"` : ''}></video>`;
+            return `<video class="markdown-video" controls src="${url}"><source src="${url}" type="video/mp4"></video>`;
         }
 
-        // Fallback: return standard image markup
-        const titleAttr = title ? ` title="${title}"` : '';
-        const altAttr = typeof text === 'string' ? text.replace(/"/g, '&quot;') : '';
-        return `<img src="${url}" alt="${altAttr}"${titleAttr}>`;
+        // Update token src if modified
+        if (url && url !== token.attrGet('src')) {
+            token.attrSet('src', url);
+        }
+        // Not a video → fall back
+        return defaultImageRender(tokens, idx, options, env, self);
     };
 
-    marked.setOptions({ renderer: videoRenderer, breaks: true });
+    // markdown-it handles parsing; no marked config needed
 
     /**
      * Creates a Markdown editor panel with live preview.
@@ -145,7 +150,13 @@
             };
 
             const processed = preprocess(raw);
-            const html = DOMPurify.sanitize(marked.parse(processed), { USE_PROFILES: { html: true } });
+            let html = md.render(processed);
+
+            html = DOMPurify.sanitize(html, {
+                USE_PROFILES: { html: true },
+                ADD_TAGS: ['video', 'source', 'iframe'],
+                ADD_ATTR: ['controls', 'src', 'title', 'allow', 'allowfullscreen', 'frameborder', 'type']
+            });
             preview.innerHTML = html;
             preview.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
             // Initialize Lucide icons within preview

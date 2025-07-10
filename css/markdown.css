@@ -120,11 +120,33 @@
     margin: var(--space-3) 0;
 }
 
-.markdown-video video,
+.markdown-video, .markdown-video video {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: var(--bg-layer-3);
+    border-radius: var(--radius-lg);
+    margin: var(--space-3) 0;
+}
+
+/* Ensure .markdown-video container does not exceed width */
+.markdown-video {
+    max-width: 100%;
+}
+
 .markdown-video iframe {
     width: 100%;
-    max-height: 480px;
-    border-radius: var(--radius);
+    height: 360px;
+    border: none;
+    border-radius: var(--radius-lg);
+}
+
+.markdown-preview img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--space-3) 0;
+    border-radius: var(--radius-lg);
 }
 
 @media (max-width: 768px) {
