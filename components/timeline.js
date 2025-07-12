@@ -22,7 +22,8 @@
             endRange = duration,
             snapIncrement = 1,
             onchange,
-            onrangechange
+            onrangechange,
+            onMarkerHover
         } = config;
 
         // Helper function (hoisted)
@@ -47,8 +48,11 @@
         // Draggable handle / playhead
         const handle = document.createElement('div');
         handle.className = 'timeline-handle';
-        // Insert chevron-down icon using Lucide
-        handle.innerHTML = '<i data-lucide="chevron-down" class="lucide"></i>';
+        // Insert playhead icon using Lucide
+        handle.innerHTML = `
+            <div class="timeline-playhead-label"></div>
+            <div class="timeline-playhead-line"></div>
+        `;
         // Set width to represent exactly one frame
         const framePct = 100 / duration;
         handle.style.width = framePct + '%';
@@ -58,6 +62,8 @@
         if (window.lucide && typeof window.lucide.createIcons === 'function') {
             window.lucide.createIcons({ nodes: [handle] });
         }
+
+        const playheadLabel = handle.querySelector('.timeline-playhead-label');
 
         /* ---------------- Playback Range ---------------- */
         let rangeStart = clamp(startRange, 0, duration);
@@ -132,17 +138,20 @@
             for (let t = 0; t <= duration; t += tickInterval) {
                 const pct = (t / duration) * 100;
 
-                const tick = document.createElement('div');
-                tick.className = 'timeline-tick';
-                if (t % majorTickInterval === 0) {
-                    tick.classList.add('timeline-tick-major');
-                } else if (t % 10 === 0) {
-                    tick.classList.add('timeline-tick-ten');
-                } else if (t % 5 === 0) {
-                    tick.classList.add('timeline-tick-five');
+                // Only create ticks for intervals of 5 and 10
+                if (t > 0 && t % 5 === 0) {
+                    const tick = document.createElement('div');
+                    tick.className = 'timeline-tick';
+                    if (t % majorTickInterval === 0) {
+                        tick.classList.add('timeline-tick-major');
+                    } else if (t % 10 === 0) {
+                        tick.classList.add('timeline-tick-ten');
+                    } else {
+                        tick.classList.add('timeline-tick-five');
+                    }
+                    tick.style.left = pct + '%';
+                    ruler.appendChild(tick);
                 }
-                tick.style.left = pct + '%';
-                ruler.appendChild(tick);
 
                 if (t % labelInterval === 0) {
                     const label = document.createElement('span');
@@ -163,6 +172,12 @@
             if (color) marker.style.backgroundColor = color;
             const pct = (time / duration) * 100;
             marker.style.left = pct + '%';
+
+            if (typeof onMarkerHover === 'function') {
+                marker.addEventListener('pointerenter', () => onMarkerHover(time, marker));
+                marker.addEventListener('pointerleave', () => onMarkerHover(null, null));
+            }
+
             track.appendChild(marker);
         };
 
@@ -180,6 +195,9 @@
             const pct = (clamped / duration) * 100;
             progressBar.style.width = pct + '%';
             handle.style.left = pct + '%';
+            if (playheadLabel) {
+                playheadLabel.textContent = clamped.toFixed(0);
+            }
             if (typeof onchange === 'function') onchange(clamped);
         };
 

@@ -21,6 +21,10 @@
         wrapper.className = 'video-player';
         wrapper.style.position = 'relative';
 
+        const thumbnailPreview = document.createElement('img');
+        thumbnailPreview.className = 'video-thumbnail-preview';
+        wrapper.appendChild(thumbnailPreview);
+
         const video = document.createElement('video');
         video.src = src;
         if (poster) video.poster = poster;
@@ -55,29 +59,25 @@
         controls.className = 'video-controls';
         wrapper.appendChild(controls);
 
-        /* ---------------- Draw Toggle ---------------- */
-        let drawToggle;
-        let drawingEnabled = false;
+        /* ---------------- Draw Button ---------------- */
+        const getCSSVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        const DRAW_COLOR_VARS = ['--error', '--warning', '--success', '--info'];
+        const DRAW_COLORS = DRAW_COLOR_VARS.map(v => getCSSVar(v) || 'red');
+
+        let drawColorIndex = 0;
+        let drawingEnabled = true; // Drawing is now always on
         let currentStroke = null;
 
-        const setDrawStyle = (enabled) => {
-            drawToggle.classList.toggle('btn-primary', enabled);
-            overlay.style.pointerEvents = enabled ? 'auto' : 'none';
-        };
-
-        drawToggle = UI.iconToggle({
-            iconOn: 'edit-3',
-            iconOff: 'edit',
-            tooltip: 'Toggle Draw',
-            initialState: () => false,
-            onchange: (enabled) => {
-                drawingEnabled = enabled;
-                setTimeout(() => setDrawStyle(enabled), 0);
+        const drawButton = UI.button({
+            icon: 'edit',
+            tooltip: 'Next Draw Color',
+            onclick: () => {
+                drawColorIndex = (drawColorIndex + 1) % DRAW_COLORS.length;
+                drawButton.style.color = DRAW_COLORS[drawColorIndex];
             }
         });
-
-        // Apply initial style
-        setDrawStyle(false);
+        drawButton.style.color = DRAW_COLORS[drawColorIndex];
+        overlay.style.pointerEvents = 'auto'; // Always listen for pointer events
 
         // Play / Pause button
         const playBtn = UI.button({ icon: 'play', variant: 'ghost' });
@@ -107,16 +107,16 @@
         // Apply initial style
         setLoopStyle(loop);
 
-        // Timeline placeholder container (flex:1)
-        const timelineHolder = document.createElement('div');
-        timelineHolder.style.flex = '1';
-        controls.appendChild(timelineHolder);
-
         // Append step, loop, draw buttons after timeline
         controls.appendChild(stepBackBtn);
         controls.appendChild(stepFwdBtn);
         controls.appendChild(loopToggle);
-        controls.appendChild(drawToggle);
+        controls.appendChild(drawButton);
+
+        const timelineHolder = document.createElement('div');
+        timelineHolder.style.flex = '1';
+        timelineHolder.style.margin = '0 var(--space-2)';
+        controls.appendChild(timelineHolder);
 
         // Time label
         const timeLabel = document.createElement('span');
@@ -138,20 +138,32 @@
         let timeline = null;
         let totalFrames = 0;
 
-        const initTimeline = (durationSec) => {
-            totalFrames = Math.round(durationSec * fps);
-            if (timeline) timelineHolder.removeChild(timeline);
+        const initTimeline = (duration) => {
+            totalFrames = Math.round(duration * fps);
+            
+            // Clear old timeline from holder
+            timelineHolder.innerHTML = '';
+
             timeline = UI.timeline({
                 duration: totalFrames,
-                current: 0,
-                tickInterval: 1,
-                majorTickInterval: 10,
-                labelInterval: 10,
-                snapIncrement: 1,
-                onchange: (posFrame) => {
-                    const targetTime = posFrame / fps;
-                    if (Math.abs(video.currentTime - targetTime) > 0.02) {
-                        video.currentTime = targetTime;
+                onchange: (frame) => {
+                    video.currentTime = frame / fps;
+                },
+                onMarkerHover: (frame, markerElement) => {
+                    if (frame !== null && strokesByFrame.has(frame)) {
+                        const frameData = strokesByFrame.get(frame);
+                        if (frameData.thumbnail) {
+                            const markerRect = markerElement.getBoundingClientRect();
+                            const wrapperRect = wrapper.getBoundingClientRect();
+                            thumbnailPreview.src = frameData.thumbnail;
+                            thumbnailPreview.style.display = 'block';
+                            const top = markerRect.top - wrapperRect.top - 100; // 90px height + 10px margin
+                            const left = markerRect.left - wrapperRect.left + (markerRect.width / 2) - 60; // 120px width / 2
+                            thumbnailPreview.style.top = `${top}px`;
+                            thumbnailPreview.style.left = `${left}px`;
+                        }
+                    } else {
+                        thumbnailPreview.style.display = 'none';
                     }
                 }
             });
@@ -189,14 +201,18 @@
 
         video.addEventListener('loadedmetadata', () => {
             initTimeline(video.duration);
-            timeLabel.textContent = `0:00 / ${formatTime(video.duration)} (0/${totalFrames})`;
+            const paddedTotal = String(totalFrames).padStart(4, '0');
+            timeLabel.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)} (0000/${paddedTotal})`;
+            if (timeline) timeline.setRange(0, totalFrames);
             if (autoplay) video.play();
         });
 
         video.addEventListener('timeupdate', () => {
             const currentFrame = Math.round(video.currentTime * fps);
             if (timeline) timeline.setPosition(currentFrame);
-            timeLabel.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)} (${currentFrame}/${totalFrames})`;
+            const paddedFrame = String(currentFrame).padStart(4, '0');
+            const paddedTotal = String(totalFrames).padStart(4, '0');
+            timeLabel.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)} (${paddedFrame}/${paddedTotal})`;
 
             redrawCurrentFrame();
         });
@@ -204,31 +220,23 @@
         /* ---------------- Drawing Logic ---------------- */
         const getCurrentFrame = () => Math.round(video.currentTime * fps);
 
-        const getCSSVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#ff0000';
-        const DRAW_COLOR = getCSSVar('--error');
         const DASH_PATTERN = [4, 4];
 
         const addPoint = (x, y) => {
             if (!currentStroke) return;
-            currentStroke.push({ x, y });
-            if (currentStroke.length > 1) {
-                const p1 = currentStroke[currentStroke.length - 2];
-                const p2 = currentStroke[currentStroke.length - 1];
-                ctx.strokeStyle = DRAW_COLOR;
-                ctx.lineWidth = 2;
-                ctx.setLineDash(DASH_PATTERN);
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.stroke();
-            }
+            currentStroke.points.push({ x, y });
         };
 
         const pointerDownDraw = (e) => {
             if (!drawingEnabled) return;
             e.preventDefault();
+            video.pause();
             const rect = overlay.getBoundingClientRect();
-            currentStroke = [];
+            currentStroke = {
+                color: DRAW_COLORS[drawColorIndex],
+                colorVar: `var(${DRAW_COLOR_VARS[drawColorIndex]})`,
+                points: []
+            };
             addPoint(e.clientX - rect.left, e.clientY - rect.top);
             overlay.addEventListener('pointermove', pointerMoveDraw);
             document.addEventListener('pointerup', pointerUpDraw, { once: true });
@@ -237,17 +245,26 @@
         const pointerMoveDraw = (e) => {
             const rect = overlay.getBoundingClientRect();
             addPoint(e.clientX - rect.left, e.clientY - rect.top);
+            redrawCurrentFrame();
         };
 
         const pointerUpDraw = () => {
             overlay.removeEventListener('pointermove', pointerMoveDraw);
-            if (currentStroke && currentStroke.length > 1) {
+            if (currentStroke && currentStroke.points.length > 1) {
                 const frame = getCurrentFrame();
-                if (!strokesByFrame.has(frame)) strokesByFrame.set(frame, []);
-                strokesByFrame.get(frame).push(currentStroke);
-                if (timeline && typeof timeline.addMarker === 'function') {
-                    timeline.addMarker(frame, 'var(--error)');
+                if (!strokesByFrame.has(frame)) {
+                    strokesByFrame.set(frame, { strokes: [], thumbnail: null });
                 }
+                const frameData = strokesByFrame.get(frame);
+                frameData.strokes.push(currentStroke);
+
+                if (timeline && typeof timeline.addMarker === 'function') {
+                    timeline.addMarker(frame, currentStroke.colorVar);
+                }
+
+                currentStroke = null;
+                redrawCurrentFrame();
+                frameData.thumbnail = overlay.toDataURL('image/png');
             }
             currentStroke = null;
         };
@@ -255,18 +272,28 @@
         const redrawCurrentFrame = () => {
             ctx.clearRect(0, 0, overlay.width, overlay.height);
             const frame = getCurrentFrame();
-            const strokes = strokesByFrame.get(frame) || [];
-            ctx.strokeStyle = DRAW_COLOR;
-            ctx.lineWidth = 2;
-            ctx.setLineDash(DASH_PATTERN);
-            strokes.forEach(stroke => {
+            const frameData = strokesByFrame.get(frame);
+            const strokes = frameData ? frameData.strokes : [];
+
+            const drawStroke = (stroke) => {
+                if (!stroke || stroke.points.length < 2) return;
+                ctx.strokeStyle = stroke.color;
+                ctx.lineWidth = 2;
+                ctx.setLineDash(DASH_PATTERN);
                 ctx.beginPath();
-                stroke.forEach((pt, idx) => {
+                stroke.points.forEach((pt, idx) => {
                     if (idx === 0) ctx.moveTo(pt.x, pt.y);
                     else ctx.lineTo(pt.x, pt.y);
                 });
                 ctx.stroke();
-            });
+            };
+
+            // Draw completed strokes for the current frame
+            strokes.forEach(drawStroke);
+
+            // Draw the live, in-progress stroke
+            drawStroke(currentStroke);
+
             ctx.setLineDash([]); // reset
         };
 

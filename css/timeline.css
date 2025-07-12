@@ -1,20 +1,23 @@
 .timeline {
     position: relative;
     width: 100%;
-    height: 36px; /* extra space for labels */
+    height: 40px; /* Taller to feel more like Blender's timeline */
     margin: var(--space-2) 0;
     touch-action: none;
     user-select: none;
+    background-color: var(--surface-2);
+    padding-top: 16px; /* Space for labels */
+    border-radius: var(--radius-md);
 }
 
 .timeline-track {
     position: absolute;
-    top: 8px; /* leave space for labels */
+    top: 16px; /* Position below the padding */
     left: 0;
     width: 100%;
-    height: 20px;
-    background-color: transparent;
-    border-radius: 2px;
+    height: 24px;
+    background-color: var(--surface-3); /* Darker track */
+    border-radius: 0;
 }
 
 .timeline-progress {
@@ -22,7 +25,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    background-color: transparent;
+    background-color: transparent; /* Blender's playhead is just a line */
     opacity: 0;
     border-radius: 2px;
 }
@@ -30,30 +33,53 @@
 /* Playhead */
 .timeline-handle {
     position: absolute;
-    top: -4px;
-    /* width: 2px; */
-    height: calc(100% + 8px);
-    background-color: var(--grey-600);
+    top: -8px; /* Align with track area */
+    height: calc(100% + 16px); /* Full height grab area */
+    background-color: transparent;
     cursor: pointer;
     z-index: 10;
 }
 
-/* Replace diamond with move-up icon */
+/* No ::before content for handle */
 .timeline-handle::before {
     content: none;
 }
 
-/* Lucide chevron-down icon styling */
+.timeline-playhead-label {
+    position: absolute;
+    top: 8px; /* Align with the top of the playhead line */
+    left: 50%;
+    transform: translate(calc(-50% - 2px), -100%);
+    background-color: var(--accent);
+    color: var(--grey-100);
+    padding: 2px 5px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 12;
+    pointer-events: none;
+}
+
+/* Playhead icon styling */
 .timeline-handle .lucide {
     position: absolute;
-    top: -12px;
     left: 50%;
-    transform: translateX(-50%);
-    width: 14px;
-    height: 14px;
-    color: var(--accent, var(--primary));
+    color: var(--accent);
     pointer-events: none; /* Icon shouldn't capture events */
 }
+
+.timeline-playhead-line {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(calc(-50% - 2px));
+    width: 2px;
+    height: calc(100% - 16px);
+    background-color: var(--accent);
+}
+
 
 /* Increased grab zone for the playhead */
 .timeline-handle::after {
@@ -67,13 +93,16 @@
     cursor: pointer;
 }
 
-/* Markers */
+/* Markers - styled as diamonds like keyframes */
 .timeline-marker {
     position: absolute;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background-color: var(--error);
+    top: auto;
+    bottom: 7px; /* Vertically centered in track */
+    width: 10px;
+    height: 10px;
+    background-color: var(--warning); /* Default keyframe color */
+    transform: translateX(calc(-50% + 1px)) rotate(45deg);
+    border: 1px solid var(--surface-2);
 }
 
 /* Ruler & Ticks */
@@ -86,7 +115,7 @@
     pointer-events: none;
     font-family: var(--font-mono);
     font-size: 10px;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
 }
 
 /* Ticks */
@@ -111,15 +140,16 @@
 
 .timeline-tick-major {
     height: 70%;
-    background-color: var(--accent, var(--primary));
+    background-color: var(--grey-300);
 }
 
 .timeline-label {
     position: absolute;
-    top: 0;
+    top: -4px; /* Position above the track */
     transform: translate(-50%, -100%);
     white-space: nowrap;
     pointer-events: none;
+    color: var(--text-secondary);
 }
 
 .timeline-range {
@@ -127,26 +157,37 @@
     top: 0;
     height: 100%;
     background-color: var(--accent, var(--primary));
-    opacity: 0.25;
+    opacity: 0.15;
     pointer-events: none;
 }
 
 .timeline-range-handle {
     position: absolute;
-    top: -4px;
+    top: 0;
     width: 2px;
-    height: calc(100% + 8px);
-    background-color: var(--grey-800);
+    height: 100%;
+    background-color: var(--accent);
     cursor: ew-resize;
+    z-index: 11;
 }
 
 .timeline-range-handle::before {
-    content: "";
-    position: absolute;
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 6px;
-    height: 6px;
-    background-color: var(--accent, var(--primary));
+    content: none;
+}
+
+/* Light theme specific styles */
+html:not(.dark-theme) .timeline-tick {
+    background-color: var(--grey-400);
+}
+
+html:not(.dark-theme) .timeline-tick-five {
+    background-color: var(--grey-500);
+}
+
+html:not(.dark-theme) .timeline-tick-ten {
+    background-color: var(--grey-600);
+}
+
+html:not(.dark-theme) .timeline-tick-major {
+    background-color: var(--grey-700);
 } 
