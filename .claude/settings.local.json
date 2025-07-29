@@ -7,7 +7,9 @@
       "Bash(cp:*)",
       "Bash(./build-css.sh:*)",
       "Bash(rm:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(npm pack:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

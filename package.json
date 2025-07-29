@@ -1,6 +1,6 @@
 {
-  "name": "styleui",
-  "version": "1.0.0",
+  "name": "styleui-components",
+  "version": "0.1.0",
   "description": "Lightweight, modular UI component library with zero dependencies",
   "main": "dist/styleui.js",
   "module": "dist/styleui.esm.js",
@@ -29,12 +29,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/styleui.git"
+    "url": "git+https://github.com/styleui/styleui.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/styleui/issues"
+    "url": "https://github.com/styleui/styleui/issues"
   },
-  "homepage": "https://github.com/yourusername/styleui#readme",
+  "homepage": "https://github.com/styleui/styleui#readme",
   "browserslist": [
     "last 2 versions",
     "not dead"

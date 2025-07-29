@@ -2,15 +2,18 @@
 
 A lightweight, modular UI component library with zero dependencies.
 
+[![npm version](https://img.shields.io/npm/v/styleui-components.svg)](https://www.npmjs.com/package/styleui-components)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 StyleUI provides a comprehensive set of UI components built with vanilla JavaScript and CSS. Each component is carefully crafted to be accessible, performant, and easy to integrate into any web project.
 
 ## Quick Start
 
-### Option 1: Use Pre-built Bundle
+### Option 1: CDN (Easiest)
 ```html
 <!-- Include CSS and JS bundles -->
-<link rel="stylesheet" href="https://unpkg.com/styleui/dist/styleui.css">
-<script src="https://unpkg.com/styleui/dist/styleui.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/styleui-components@latest/dist/styleui.css">
+<script src="https://unpkg.com/styleui-components@latest/dist/styleui.min.js"></script>
 
 <!-- Use components -->
 <script>
@@ -19,18 +22,26 @@ StyleUI provides a comprehensive set of UI components built with vanilla JavaScr
 </script>
 ```
 
-### Option 2: ES Modules
-```javascript
-import { button, modal, toast } from 'styleui';
+### Option 2: NPM Installation
+```bash
+npm install styleui-components
+```
 
+Then in your JavaScript:
+```javascript
+// CommonJS
+const { button, modal, toast } = require('styleui-components');
+
+// ES Modules (with bundler)
+import { button, modal, toast } from 'styleui-components';
+
+// Use the components
 const btn = button({ text: 'Click Me', variant: 'primary' });
 document.querySelector('#app').appendChild(btn);
 ```
 
-### Option 3: NPM Installation
-```bash
-npm install styleui
-```
+### Option 3: Download
+Download the latest release from [GitHub](https://github.com/styleui/styleui/releases) or get individual files from the `dist/` directory.
 
 ## Project Structure
 
@@ -122,23 +133,24 @@ const { modal, close } = UI.modal({
 });
 ```
 
-## Production Use
+## Installation & Usage
 
-### Use the Bundle (Recommended)
-Include the pre-built files from the `dist/` directory:
+### CDN Links
 ```html
-<link rel="stylesheet" href="dist/styleui.css">
-<script src="dist/styleui.min.js"></script>
+<!-- Latest version -->
+<link rel="stylesheet" href="https://unpkg.com/styleui-components@latest/dist/styleui.css">
+<script src="https://unpkg.com/styleui-components@latest/dist/styleui.min.js"></script>
+
+<!-- Specific version -->
+<link rel="stylesheet" href="https://unpkg.com/styleui-components@0.1.0/dist/styleui.css">
+<script src="https://unpkg.com/styleui-components@0.1.0/dist/styleui.min.js"></script>
 ```
 
-### Cherry-pick Components
-For smaller builds, include only what you need:
-```html
-<link rel="stylesheet" href="css/variables.css">
-<link rel="stylesheet" href="css/button.css">
-<script src="components/core.js"></script>
-<script src="components/button.js"></script>
-```
+### Package Info
+- **NPM**: [styleui-components](https://www.npmjs.com/package/styleui-components)
+- **CDN**: [unpkg.com/styleui-components](https://unpkg.com/browse/styleui-components/)
+- **Size**: 65KB minified JS + 80KB CSS
+- **Dependencies**: None
 
 ## Documentation
 

@@ -1,0 +1,19 @@
+# Demo files not needed in NPM package
+index.html
+panels/
+sections/
+media/
+
+# Development files
+.gitignore
+.git/
+.vscode/
+.idea/
+
+# Build scripts (if any remain)
+build*.js
+build*.sh
+
+# Other
+*.log
+.DS_Store
