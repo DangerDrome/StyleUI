@@ -1,16 +1,53 @@
-# StyleUI Style Guide
+# StyleUI
 
-This directory contains **all client-side assets** that power the StyleUI design-system demo (style-guide).
+A lightweight, modular UI component library with zero dependencies.
 
-## High-level layout
+StyleUI provides a comprehensive set of UI components built with vanilla JavaScript and CSS. Each component is carefully crafted to be accessible, performant, and easy to integrate into any web project.
+
+## Quick Start
+
+### Option 1: Use Pre-built Bundle
+```html
+<!-- Include CSS and JS bundles -->
+<link rel="stylesheet" href="https://unpkg.com/styleui/dist/styleui.css">
+<script src="https://unpkg.com/styleui/dist/styleui.min.js"></script>
+
+<!-- Use components -->
+<script>
+  const button = UI.button({ text: 'Click Me', variant: 'primary' });
+  document.body.appendChild(button);
+</script>
+```
+
+### Option 2: ES Modules
+```javascript
+import { button, modal, toast } from 'styleui';
+
+const btn = button({ text: 'Click Me', variant: 'primary' });
+document.querySelector('#app').appendChild(btn);
+```
+
+### Option 3: NPM Installation
+```bash
+npm install styleui
+```
+
+## Project Structure
 
 ```
 StyleUI/
-├── css/         — Atomic & component stylesheets (no duplicates)
-├── components/  — Vanilla-JS UI building blocks (IIFE, attach to `UI.*`)
-├── sections/    — Content generators that populate the demo page
-├── panels/      — Header / nav / settings logic for the live demo shell
-└── index.html   — Self-contained style-guide entry point
+├── dist/         — Pre-built bundles for production use
+│   ├── styleui.js       — Full library
+│   ├── styleui.min.js   — Minified version (64KB)
+│   ├── styleui.css      — All styles bundled
+│   └── styleui.esm.js   — ES module exports
+├── css/          — Modular stylesheets
+├── components/   — Individual component files
+├── sections/     — Demo page content generators
+├── panels/       — Demo UI shell (not for production)
+├── API.md        — Complete API documentation
+├── package.json  — NPM package configuration
+└── index.html    — Live demo and style guide
 ```
 
 ### 1. `css/`  – fully modular styles
@@ -45,15 +82,82 @@ A static file referencing everything above *with relative paths* (no build step 
    * Create `sections/<component>s.js` that calls the factory and appends a demo panel.
 4. Reference new files in `index.html` (keep alphabetical order).
 
-## Build / production use
-The design system is split deliberately—include only what you need:
+## Available Components
+
+- **Buttons** - Standard, icon, toggle, and cycle buttons
+- **Cards** - Flexible content containers with headers and actions
+- **Forms** - Complete form controls including inputs, selects, checkboxes, date pickers
+- **Modals** - Accessible modal dialogs with customizable actions
+- **Toasts** - Non-blocking notifications with auto-dismiss
+- **Menus** - Context menus and dropdowns
+- **Panels** - Collapsible panels for content organization
+- **Trees** - Hierarchical tree views with expand/collapse
+- **Timeline** - Event timeline visualization
+- **Video Player** - Custom video player with controls
+- **Markdown Editor** - Live markdown editing with preview
+- **And more...** - Tooltips, progress bars, spinners, tags
+
+## API Example
+
+```javascript
+// Create a button
+const saveBtn = UI.button({
+    text: 'Save Changes',
+    icon: 'save',
+    variant: 'primary',
+    onclick: () => handleSave()
+});
+
+// Show a toast notification
+UI.toast('Changes saved successfully', { type: 'success' });
+
+// Open a modal
+const { modal, close } = UI.modal({
+    title: 'Confirm Delete',
+    content: 'This action cannot be undone.',
+    actions: [
+        { text: 'Cancel', variant: 'neutral' },
+        { text: 'Delete', variant: 'error', onclick: () => performDelete() }
+    ]
+});
+```
+
+## Production Use
+
+### Use the Bundle (Recommended)
+Include the pre-built files from the `dist/` directory:
+```html
+<link rel="stylesheet" href="dist/styleui.css">
+<script src="dist/styleui.min.js"></script>
+```
+
+### Cherry-pick Components
+For smaller builds, include only what you need:
 ```html
 <link rel="stylesheet" href="css/variables.css">
 <link rel="stylesheet" href="css/button.css">
 <script src="components/core.js"></script>
 <script src="components/button.js"></script>
 ```
-No compilation required; all JS is ES6-compatible and executes under an IIFE to avoid globals.
+
+## Documentation
+
+- **[API.md](API.md)** - Complete API reference with examples
+- **[Live Demo](index.html)** - Interactive component showcase
+- **Zero Dependencies** - No external libraries required
+- **Modern JavaScript** - ES6+ with no transpilation needed
+- **Customizable** - CSS variables for easy theming
+
+## Browser Support
+
+- Chrome/Edge 88+
+- Firefox 78+
+- Safari 14+
+- Mobile browsers with ES6 support
+
+## License
+
+MIT
 
 ---
 Questions or contributions? open an issue on the main repository. 
